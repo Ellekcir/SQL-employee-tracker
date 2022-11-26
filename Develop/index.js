@@ -2,17 +2,37 @@ const mysql = require('mysql2');
 const cTable = require('console.table');
 const inquirer = require('inquirer');
 const fs = require('fs');
+require('dotenv').config();
+const logo = require('asciiart-logo');
+const config = require('./package.json');
+
 
 // Connect to database
 const db = mysql.createConnection(
   {
     host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'employees_db'
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
   },
   console.log(`Connected to the employees_db database.`)
 );
+
+
+function startMenu () {
+    console.log(logo({
+        name: 'Employee Tracker',
+        font: 'Soft',
+        lineChars: 10,
+        padding: 2,
+        margin: 3,
+        borderColor: 'white',
+        logoColor: 'bold-green',
+        textColor: 'blue',}
+    ) 
+    .emptyLine()
+    .center("Welcome to my Employee Tracker, please choose from the following prompts")
+    .render());
 
 
 inquirer
@@ -43,10 +63,10 @@ inquirer
         case "Add Department": 
             addDepartmentQuestions();
             break;
-
-
-    }
+    } 
+    startMenu();
 });
+};
 
 function viewAllEmployees () {
 db.query("SELECT * FROM employees", function(err, data){
@@ -74,6 +94,8 @@ inquirer
     )
 
 }
+
+startMenu();
 // Add department
 // What is the name of the Department?
 //  - Gives back message "Added ${'department"} to the database"
