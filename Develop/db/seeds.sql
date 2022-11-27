@@ -17,14 +17,14 @@ VALUES  ("Lawyer", 90000, 3),
         ("Graphic Designer", 80000, 4);
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
-VALUES  ("Jess", "Red", 2, NULL),
-        ("Robert", "Orange", 3, NULL),
-        ("Allan", "Blue", 6, NULL),
-        ("Alison", "Purple", 7, NULL),
+VALUES  ("Jess", "James", 2, NULL),
+        ("Robert", "Pan", 3, NULL),
+        ("Allan", "Stevens", 6, NULL),
+        ("Alison", "Jones", 7, NULL),
         ("Ian", "Brown", 1, 1),
-       ("Mark", "Yellow", 4, 2),
-       ("Shaun", "Green", 5, 3),
-       ("May", "Pink", 8, 4);
+       ("Mark", "Green", 4, 2),
+       ("Shaun", "Short", 5, 3),
+       ("May", "Best", 8, 4);
 
 
 
