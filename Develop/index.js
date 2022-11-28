@@ -61,20 +61,17 @@ function startMenu() {
             //console.log(response);
             switch (response.mainMenu) {
                 case "View all Employees":
+                    console.log("EMPLOYEES");
                     viewAllEmployees();
                     break;
 
                 case "View All Roles":
-                    console.log();
-                    console.log("SEE ALL ROLES BELOW");
-                    console.log();
+                    console.log("ROLES");
                     viewAllRoles();
                     break;
 
                 case "View All Departments":
-                    console.log();
                     console.log("DEPARTMENTS");
-                    console.log();
                     viewAllDepartments();
                     break;
 
@@ -183,15 +180,18 @@ function addEmployee() {
             let newEmployeeManager = response.newEmployeeManager;
 
             db.query(
-                `INSERT INTO employees (first_name, last_name, role_id, manager_id) 
-                VALUES ('${firstName}', '${lastName}', '${newEmployeeRole}', '${newEmployeeManager}')`,
+                `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ('${firstName}', '${lastName}', '${newEmployeeRole}', '${newEmployeeManager}')`,
                 function (err, data) {
                     if (err) console.log(err);
-                    console.table(data);
+                    // console.table(data);
                     viewAllEmployees();
-                    startMenu();
+                    console.log(`Added ${firstName} ${lastName} to the database`);
+                    return;
+
                 }
             );
+            
+            
         });
 };
 
@@ -235,13 +235,14 @@ function addRole() {
 
                 function (err, response) {
                     if (err) console.log(err);
-
-
-                    console.log(`Added ${roleName} to the database`);
+                    // console.table(response);
                     viewAllRoles();
+                    console.log(`Added ${roleName} to the database`);
+
                     return;
                 }
             );
+            
         });
 };
 
@@ -267,11 +268,15 @@ function addDepartmentQuestions() {
         .then((response) => {
             db.query(`INSERT INTO department (name) VALUES ('${response.departmentName}')`, function (err, data) {
                 if (err) console.log(err);
-                console.table(data)
-            })
-        }
-        )
+                viewAllDepartments();
+                console.log(`Added ${response.departmentName} to the database`);
+                
+                return;
+        });
 
+            
+        });
+;
 }
 
 //======================DRAFTING=========================================
@@ -300,8 +305,11 @@ function updateEmployeeRole() {
                     if (err) console.log(err);
                     console.log("Updated employee's role");
                     viewAllRoles();
+                    startMenu();
+                    return;
                 }
             );
+            
         });
 };
 
