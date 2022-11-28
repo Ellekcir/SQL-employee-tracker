@@ -24,20 +24,20 @@ const db = mysql.createConnection(
 
 
 function startMenu() {
-    // console.log(logo({
-    //     name: 'Employee Tracker',
-    //     font: 'Soft',
-    //     lineChars: 8,
-    //     padding: 2,
-    //     margin: 2,
-    //     borderColor: 'white',
-    //     logoColor: 'bold-blue',
-    //     textColor: 'blue',
-    // }
-    // )
-    //     .emptyLine()
-    //     .center("Welcome to my Employee Tracker, please choose from the following prompts")
-    //     .render());
+    console.log(logo({
+        name: 'Employee Tracker',
+        font: 'Soft',
+        lineChars: 8,
+        padding: 2,
+        margin: 2,
+        borderColor: 'white',
+        logoColor: 'bold-blue',
+        textColor: 'blue',
+    }
+    )
+        .emptyLine()
+        .center("Welcome to my Employee Tracker, please choose from the following prompts")
+        .render());
 
 
     inquirer
@@ -77,7 +77,7 @@ function startMenu() {
 
                 case "Update Employee Role":
                     console.log("UPDATE EMPLOYEE ROLE");
-                    updateEmployeeRole()
+                    updateEmployeeRole();
                     break;
 
                 case "Add Employee":
@@ -104,7 +104,7 @@ function startMenu() {
         });
 };
 
-//=================================== these all work ===============================================
+//=================================== VIEWING OPTIONS ===============================================
 
 
 // Retrieves Employee Table
@@ -145,8 +145,8 @@ function viewAllRoles() {
 
 
 
-//==================================================================================
-// Add employee
+//=======================================ADDS AN EMPLOYEE ===========================================
+
 
 function addEmployee() {
     inquirer
@@ -173,7 +173,7 @@ function addEmployee() {
             }
         ])
         .then((response) => {
-            console.log(response);
+            //console.log(response);
             let firstName = response.firstName;
             let lastName = response.lastName;
             let newEmployeeRole = response.newEmployeeRole;
@@ -190,8 +190,8 @@ function addEmployee() {
 
                 }
             );
-            
-            
+
+
         });
 };
 
@@ -204,7 +204,7 @@ function addEmployee() {
 
 
 
-//===================================== ADD ROLE FUNCTION ========================================================
+//===================================== ADD A ROLE ========================================================
 function addRole() {
     inquirer
         .prompt([
@@ -242,7 +242,7 @@ function addRole() {
                     return;
                 }
             );
-            
+
         });
 };
 
@@ -252,7 +252,7 @@ function addRole() {
 // What department does the role belong to? [Finance, Legal, etc etc]
 // - Gives back message "Added ${'role} to the database"
 
-//==============================ADD DEPARTMENT FUNCTION works adds to DB - throws error ==========================================
+//==============================ADDS A DEPARTMENT==========================================
 
 
 function addDepartmentQuestions() {
@@ -270,48 +270,63 @@ function addDepartmentQuestions() {
                 if (err) console.log(err);
                 viewAllDepartments();
                 console.log(`Added ${response.departmentName} to the database`);
-                
-                return;
-        });
 
-            
+                return;
+            });
+
+
         });
-;
+    ;
 }
 
 //======================DRAFTING=========================================
-function updateEmployeeRole() {
+async function updateEmployeeRole() {
+    const choice = await db.promise().query("SELECT id, first_name, last_name FROM employees;");
+    //console.table(choice[0]);
+    const arrayOfDBresults = choice[0];
 
-    inquirer
-        .prompt([
-            {
-                type: 'list',
-                message: "Which employee's role do you want to update?",
-                name: "employeeUpdateRole",
-                //             choices: [--array of all employees------viewAllEmployees();-];
-            },
-            {
-                type: 'list',
-                message: 'Which role do you want to assign the selected employee?',
-                name: "employeeRole",
-                //              choices: [----array of Roles--------]
-            },
-        ])
-        .then((response) => {
-            let employeeRole = response.employeeRole;
+const arrayOfName = arrayOfDBresults.map((individualObj) => {
+    return {id: individualObj.id, full_name: `${individualObj.first_name} ${individualObj.last_name}`};
+});
 
-            db.query(`UPDATE employee SET role_id WHERE id = ${employeeRole};`,
-                function (err, response) {
-                    if (err) console.log(err);
-                    console.log("Updated employee's role");
-                    viewAllRoles();
-                    startMenu();
-                    return;
-                }
-            );
-            
-        });
+console.table(arrayOfName); 
+const arrID = arrayOfName.map((individualObj) => {
+    return individualObj.id;
+
+})
+inquirer
+.prompt([
+    {
+      type: "list",
+      name: "employeeId",
+      message: "Which employee's role do you want to update? Please reference chart above",
+      choices: arrID
+    }
+  ]
+)
+
+            // {
+            //     type: 'list',
+            //     message: 'Which role do you want to assign the selected employee?',
+            //     name: "employeeRole",
+            //     //              choices: [----array of Roles--------]
+            // },
+       // ])
+       // .then((response) => {
+            // let employeeRole = response.employeeRole;
+
+            // db.query(`UPDATE employee SET role_id WHERE id = ${employeeRole};`,
+            //     function (err, response) {
+            //         if (err) console.log(err);
+            //         console.log("Updated employee's role");
+            //         viewAllRoles();
+            //         startMenu();
+            //         return;
+            //     }
+            // );
+
 };
+
 
 
 
