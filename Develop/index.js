@@ -5,6 +5,7 @@ const fs = require('fs');
 require('dotenv').config();
 const logo = require('asciiart-logo');
 const config = require('./package.json');
+const { title } = require('process');
 
 
 // Connect to database
@@ -14,6 +15,7 @@ const db = mysql.createConnection(
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
+        multipleStatements: true
     },
     console.log(`Connected to the employees_db database.`)
 );
@@ -22,20 +24,20 @@ const db = mysql.createConnection(
 
 
 function startMenu() {
-    console.log(logo({
-        name: 'Employee Tracker',
-        font: 'Soft',
-        lineChars: 8,
-        padding: 2,
-        margin: 2,
-        borderColor: 'white',
-        logoColor: 'bold-blue',
-        textColor: 'blue',
-    }
-    )
-        .emptyLine()
-        .center("Welcome to my Employee Tracker, please choose from the following prompts")
-        .render());
+    // console.log(logo({
+    //     name: 'Employee Tracker',
+    //     font: 'Soft',
+    //     lineChars: 8,
+    //     padding: 2,
+    //     margin: 2,
+    //     borderColor: 'white',
+    //     logoColor: 'bold-blue',
+    //     textColor: 'blue',
+    // }
+    // )
+    //     .emptyLine()
+    //     .center("Welcome to my Employee Tracker, please choose from the following prompts")
+    //     .render());
 
 
     inquirer
@@ -114,7 +116,8 @@ function viewAllEmployees() {
     db.query("SELECT * FROM employees", function (err, data) {
         if (err) console.log(err);
         console.table(data);
-        console.log("Press enter to return to menu");
+        // console.log("Press enter to return to menu");
+        startMenu();
 
     });
 };
@@ -127,7 +130,7 @@ function viewAllDepartments() {
     db.query("SELECT * FROM department", function (err, data) {
         if (err) console.log(err);
         console.table(data);
-        // startMenu();
+        startMenu();
 
     })
 };
@@ -139,13 +142,13 @@ function viewAllRoles() {
     db.query("SELECT * FROM role", function (err, data) {
         if (err) console.log(err);
         console.table(data);
-
+        startMenu();
     })
 };
 
 
 
-//==================================throws error doesnt add employee to DB ================================================
+//==================================================================================
 // Add employee
 
 function addEmployee() {
@@ -164,34 +167,29 @@ function addEmployee() {
             {
                 type: 'input',
                 name: 'newEmployeeRole',
-                message: "What is the employee's role?",
+                message: "What is the employee's role ID?",
             },
             {
-                type: 'list',
+                type: 'input',
                 name: 'newEmployeeManager',
-                message: "Who is the employee's manager?",
-                choices: ["Jess James - Legal Team Lead", "Robert Pan - Sales Lead", "Allan Stevens - Account Manager", "Alison Jones - Marketing Manager"]
+                message: "Who is the employee's manager ID?",
             }
         ])
         .then((response) => {
+            console.log(response);
             let firstName = response.firstName;
             let lastName = response.lastName;
             let newEmployeeRole = response.newEmployeeRole;
             let newEmployeeManager = response.newEmployeeManager;
 
             db.query(
-                `INSERT INTO department (name) VALUES ('${firstName}')`,
-                `INSERT INTO department (name) VALUES ('${lastName}')`,
-                `INSERT INTO department (name) VALUES ('${newEmployeeRole}')`,
-                `INSERT INTO department (name) VALUES ('${newEmployeeManager}')`,
-                // "INSERT INTO employee (first_name) VALUES (?);", firstName,
-                //  "INSERT INTO employee (last_name) VALUES (?);", lastName,
-                // "INSERT INTO employee (role_id) VALUES (?);", newEmployeeRole,
-                // "INSERT INTO employee (manager_id) VALUES (?);", newEmployeeManager,
+                `INSERT INTO employees (first_name, last_name, role_id, manager_id) 
+                VALUES ('${firstName}', '${lastName}', '${newEmployeeRole}', '${newEmployeeManager}')`,
                 function (err, data) {
                     if (err) console.log(err);
                     console.table(data);
                     viewAllEmployees();
+                    startMenu();
                 }
             );
         });
@@ -206,7 +204,7 @@ function addEmployee() {
 
 
 
-//===================================== ADD ROLE FUNCTION works adds to DB - throws error ========================================================
+//===================================== ADD ROLE FUNCTION ========================================================
 function addRole() {
     inquirer
         .prompt([
@@ -221,10 +219,9 @@ function addRole() {
                 message: 'What is the salary for this role?'
             },
             {
-                type: 'list',
+                type: 'input',
                 name: 'roleDepartment',
-                message: 'What department does the role belong to?',
-                choices: ['Finance', 'Sales', 'Legal', 'Marketing']
+                message: 'What department does the role belong to? Please enter department ID',
             },
         ])
         .then((response) => {
@@ -233,12 +230,8 @@ function addRole() {
             let roleDepartment = response.roleDepartment;
 
             db.query(
-                "INSERT INTO role (title) VALUES (?);",
-                roleName,
-                "INSERT INTO role (salary) VALUES (?);",
-                roleSalary,
-                "INSERT INTO role (department_id) VALUES (?);",
-                roleDepartment,
+                `INSERT INTO ROLE (title, salary, department_id) 
+                VALUES ('${roleName}', '${roleSalary}', '${roleDepartment}');`,
 
                 function (err, response) {
                     if (err) console.log(err);
@@ -283,6 +276,7 @@ function addDepartmentQuestions() {
 
 //======================DRAFTING=========================================
 function updateEmployeeRole() {
+
     inquirer
         .prompt([
             {
@@ -370,9 +364,5 @@ startMenu();
 
 
 
-//========================================DRAFTING===============================================================
-// use below to write new file but in this case you will need to find the on the method to add an entry to db.
-    // fs.writeFile('main.html', getHTML(response), (err) =>
-    //   err ? console.log(err) : console.log('Success!')
-    // );
+
 //========================================DRAFTING===============================================================
