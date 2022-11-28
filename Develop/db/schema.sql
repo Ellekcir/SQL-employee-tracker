@@ -31,6 +31,3 @@ CREATE TABLE employees (
   REFERENCES employees(id)
 );
 
-SELECT * FROM department;
-SELECT * FROM role;
-SELECT * FROM employees;

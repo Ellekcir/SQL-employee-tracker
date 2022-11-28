@@ -23,7 +23,7 @@ const db = mysql.createConnection(
 //==================================================================================
 
 
-function startMenu() {
+
     console.log(logo({
         name: 'Employee Tracker',
         font: 'Soft',
@@ -39,6 +39,11 @@ function startMenu() {
         .center("Welcome to my Employee Tracker, please choose from the following prompts")
         .render());
 
+startMenu();
+
+function startMenu() {
+
+
 
     inquirer
         .prompt([
@@ -50,10 +55,10 @@ function startMenu() {
                     "View all Employees",
                     "View All Roles",
                     "View All Departments",
-                    "Update Employee Role",
                     "Add Employee",
                     "Add Department",
-                    "Add Role",
+                    "Add Role", 
+                    "Update Employee Role",
                     "Finish"],
             },
         ])
@@ -109,7 +114,7 @@ function startMenu() {
 
 // Retrieves Employee Table
 function viewAllEmployees() {
-    console.log("EMPLOYEES");
+   
     db.query("SELECT * FROM employees", function (err, data) {
         if (err) console.log(err);
         console.table(data);
@@ -123,7 +128,7 @@ function viewAllEmployees() {
 // Retrieves Department Table
 
 function viewAllDepartments() {
-    console.log("DEPARTMENTS");
+
     db.query("SELECT * FROM department", function (err, data) {
         if (err) console.log(err);
         console.table(data);
@@ -135,7 +140,7 @@ function viewAllDepartments() {
 // Retrieves Role Table
 
 function viewAllRoles() {
-    console.log("ROLES");
+
     db.query("SELECT * FROM role", function (err, data) {
         if (err) console.log(err);
         console.table(data);
@@ -180,7 +185,7 @@ function addEmployee() {
             let newEmployeeManager = response.newEmployeeManager;
 
             db.query(
-                `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ('${firstName}', '${lastName}', '${newEmployeeRole}', '${newEmployeeManager}')`,
+                `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ('${firstName}', '${lastName}', '${newEmployeeRole}', '${newEmployeeManager}');`,
                 function (err, data) {
                     if (err) console.log(err);
                     // console.table(data);
@@ -206,6 +211,7 @@ function addEmployee() {
 
 //===================================== ADD A ROLE ========================================================
 function addRole() {
+   
     inquirer
         .prompt([
             {
@@ -221,7 +227,7 @@ function addRole() {
             {
                 type: 'input',
                 name: 'roleDepartment',
-                message: 'What department does the role belong to? Please enter department ID',
+                message: 'What department does the role belong to? Please enter department ID, use reference chart above',
             },
         ])
         .then((response) => {
@@ -266,7 +272,7 @@ function addDepartmentQuestions() {
             },
         ])
         .then((response) => {
-            db.query(`INSERT INTO department (name) VALUES ('${response.departmentName}')`, function (err, data) {
+            db.query(`INSERT INTO department (name) VALUES ('${response.departmentName}');`, function (err, data) {
                 if (err) console.log(err);
                 viewAllDepartments();
                 console.log(`Added ${response.departmentName} to the database`);
@@ -279,7 +285,7 @@ function addDepartmentQuestions() {
     ;
 }
 
-//======================DRAFTING=========================================
+// //======================DRAFTING=========================================
 async function updateEmployeeRole() {
     const choice = await db.promise().query("SELECT id, first_name, last_name FROM employees;");
     //console.table(choice[0]);
@@ -304,8 +310,8 @@ inquirer
     }
   ]
 )
-
-            // {
+};
+//             // {
             //     type: 'list',
             //     message: 'Which role do you want to assign the selected employee?',
             //     name: "employeeRole",
@@ -325,7 +331,7 @@ inquirer
             //     }
             // );
 
-};
+// };
 
 
 
@@ -334,8 +340,6 @@ inquirer
 // console.table(d)
 
 //======================DRAFTING========================================
-
-startMenu();
 
 
 
